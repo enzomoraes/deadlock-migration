@@ -59,19 +59,6 @@ method completes, the migration is **not recorded as done**. On the next boot,
 Rails tries to run it again — but the columns already exist — causing
 `PG::DuplicateColumn` on every subsequent init container attempt.
 
-### PostgreSQL table-level lock conflict matrix
-
-| Lock held \ Lock requested | ACCESS SHARE | ROW SHARE | ROW EXCLUSIVE | SHARE UPDATE EXCLUSIVE | SHARE | SHARE ROW EXCLUSIVE | EXCLUSIVE | ACCESS EXCLUSIVE |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ACCESS SHARE             | | | | | | | | X |
-| ROW SHARE                | | | | | | | X | X |
-| ROW EXCLUSIVE            | | | | X | X | X | X | X |
-| SHARE UPDATE EXCLUSIVE   | | | X | X | X | X | X | X |
-| SHARE                    | | | X | X | | X | X | X |
-| SHARE ROW EXCLUSIVE      | | | X | X | X | X | X | X |
-| EXCLUSIVE                | | X | X | X | X | X | X | X |
-| ACCESS EXCLUSIVE         | X | X | X | X | X | X | X | X |
-
 Key operations:
 - `INSERT / UPDATE / DELETE` → **ROW EXCLUSIVE**
 - `ADD FOREIGN KEY` → **SHARE ROW EXCLUSIVE** on child + **ROW SHARE** on parent
